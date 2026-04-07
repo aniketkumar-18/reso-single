@@ -1,9 +1,7 @@
-"""Chat route — primary consumer-facing endpoint.
+"""Chat route — single-agent wellness assistant endpoint.
 
 POST /api/v1/chat
-  • Accepts `workflow_mode: "multi" | "single"` to select which graph to run.
-  • "multi"  → original multi-agent pipeline (classify_route + domain agents + aggregator)
-  • "single" → unified single wellness agent (context_hydration + wellness_agent)
+  • Runs the unified single wellness agent (context_hydration + wellness_agent ReAct loop).
   • Returns a streaming SSE response (text/event-stream) or JSON.
 
 SSE event schema:
@@ -30,14 +28,13 @@ from src.gateway.middleware.rate_limit import require_rate_limit
 from src.gateway.middleware.tracing import get_current_trace_id
 from src.infra import db
 from src.infra.logger import setup_logger
-from src.orchestrator.graph import invoke_graph as invoke_multi, stream_graph_events as stream_multi
 from src.agent.graph import invoke_graph as invoke_single, stream_graph_events as stream_single
 
 logger = setup_logger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["chat"])
 
-# Final-output node name for each workflow mode
-_FINAL_NODE = {"multi": "aggregator", "single": "wellness_agent"}
+# Final-output node name for single-agent workflow
+_FINAL_NODE = {"single": "wellness_agent"}
 
 
 # ── Request / response models ──────────────────────────────────────────────────
@@ -63,12 +60,9 @@ class ChatRequest(BaseModel):
         ),
     )
     stream: bool = Field(True, description="Set false to get a single JSON response.")
-    workflow_mode: Literal["multi", "single"] = Field(
+    workflow_mode: Literal["single"] = Field(
         "single",
-        description=(
-            '"single" — unified single wellness agent (all tools, one ReAct loop). '
-            '"multi" — original multi-agent pipeline (classify → domain agents → aggregator).'
-        ),
+        description='"single" — unified single wellness agent (all tools, one ReAct loop).',
     )
 
 
@@ -93,8 +87,8 @@ async def _stream_graph(
     compiled_graph,
     workflow_mode: str,
 ) -> AsyncGenerator[dict, None]:
-    """Run the selected graph with real token streaming via astream_events v2."""
-    stream_fn = stream_single if workflow_mode == "single" else stream_multi
+    """Run the single-agent graph with real token streaming via astream_events v2."""
+    stream_fn = stream_single
     final_node = _FINAL_NODE[workflow_mode]
 
     try:
@@ -172,23 +166,17 @@ async def chat(
     _rate: None = Depends(require_rate_limit),
 ) -> EventSourceResponse | ChatResponse:
     """
-    Main chat endpoint. Supports two workflow modes:
-    - "multi": original multi-agent pipeline (classify → parallel domain agents → aggregator)
-    - "single": unified single wellness agent (all tools in one ReAct loop)
+    Single-agent wellness assistant: all tools in one ReAct loop.
     """
     mode = body.workflow_mode
 
-    if mode == "single":
-        compiled_graph = getattr(request.app.state, "single_graph", None)
-        invoke_fn = invoke_single
-    else:
-        compiled_graph = getattr(request.app.state, "multi_graph", None)
-        invoke_fn = invoke_multi
+    compiled_graph = getattr(request.app.state, "single_graph", None)
+    invoke_fn = invoke_single
 
     if compiled_graph is None:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Graph for workflow_mode='{mode}' is not initialised.",
+            detail="Single-agent graph is not initialised.",
         )
 
     conversation_id = body.conversation_id or str(uuid.uuid4())
@@ -261,7 +249,6 @@ async def health(request: Request) -> dict:
     except Exception as exc:
         checks["supabase"] = f"error: {exc}"
 
-    checks["multi_graph"] = "ok" if getattr(request.app.state, "multi_graph", None) is not None else "not ready"
     checks["single_graph"] = "ok" if getattr(request.app.state, "single_graph", None) is not None else "not ready"
 
     # Feature 9 — Mem0 OSS component status + safe config summary

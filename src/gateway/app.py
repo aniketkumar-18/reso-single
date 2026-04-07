@@ -1,8 +1,8 @@
-"""FastAPI application factory.
+"""FastAPI application factory — single-agent wellness assistant.
 
 Responsibilities:
   - Create the app with lifespan (startup/shutdown hooks).
-  - Compile BOTH graph variants (multi-agent and single-agent) and attach to app.state.
+  - Compile the single-agent graph and attach to app.state.
   - Register middleware (CORS, structured logging).
   - Mount routers.
   - Instrument with OTEL.
@@ -52,9 +52,9 @@ def _configure_logging() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """Startup: compile both graph variants. Shutdown: close connections."""
+    """Startup: compile single-agent graph. Shutdown: close connections."""
     logger = setup_logger(__name__)
-    logger.info("Starting up Reso gateway…")
+    logger.info("Starting up Reso single-agent gateway…")
 
     checkpointer = MemorySaver()
 
@@ -66,15 +66,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except Exception:
         logger.exception("Failed to compile single-agent graph — will be None")
         app.state.single_graph = None
-
-    # ── Multi-agent graph (original pipeline) — kept for backward compat ──────
-    try:
-        from src.orchestrator.graph import compile_graph as compile_multi
-        app.state.multi_graph = compile_multi(checkpointer)
-        logger.info("Multi-agent graph compiled and ready")
-    except Exception:
-        logger.exception("Failed to compile multi-agent graph — will be None")
-        app.state.multi_graph = None
 
     # ── Mem0 OSS stack — config validation + singleton pre-warm ───────────────
     # Feature 9: validate each component at startup and log per-component status.
@@ -119,8 +110,8 @@ def create_app() -> FastAPI:
     settings = get_settings()
 
     app = FastAPI(
-        title="Reso — AI Wellness Assistant",
-        description="Dual-mode: multi-agent pipeline and single-agent wellness assistant",
+        title="Reso — Single-Agent Wellness Assistant",
+        description="Unified single wellness agent: all tools in one ReAct loop",
         version="0.2.0",
         docs_url="/docs" if not settings.is_production else None,
         redoc_url="/redoc" if not settings.is_production else None,
