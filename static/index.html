@@ -69,35 +69,6 @@
     }
     .status-dot.connected { background: var(--accent); }
 
-    /* ── Workflow toggle ── */
-    .workflow-toggle {
-      display: flex;
-      align-items: center;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 3px;
-      gap: 2px;
-      flex-shrink: 0;
-    }
-    .workflow-btn {
-      background: none;
-      border: none;
-      border-radius: 16px;
-      padding: 4px 12px;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all .2s;
-      white-space: nowrap;
-    }
-    .workflow-btn.active {
-      background: var(--accent-dim);
-      color: var(--accent);
-      border: 1px solid rgba(93,202,165,0.3);
-    }
-    .workflow-btn:not(.active):hover { color: var(--text); }
 
     /* ── Token bar ── */
     #token-bar {
@@ -494,11 +465,6 @@
     </div>
   </div>
   <div class="header-right">
-    <!-- Workflow mode toggle -->
-    <div class="workflow-toggle" title="Switch between multi-agent pipeline and single unified agent">
-      <button class="workflow-btn active" id="btn-multi" onclick="setWorkflowMode('multi')">Multi-Agent</button>
-      <button class="workflow-btn" id="btn-single" onclick="setWorkflowMode('single')">Single Agent</button>
-    </div>
     <div class="status-badge">
       <div class="status-dot" id="status-dot"></div>
       <span id="status-text">disconnected</span>
@@ -580,15 +546,9 @@
   let jwt = '';
   let conversationId = null;
   let isStreaming = false;
-  let workflowMode = 'multi';   // "multi" | "single"
+  let workflowMode = 'single';
   let imageUrl = null;          // base64 data URI or null
   const conversations = {};   // id → { title, messages[] }
-
-  function setWorkflowMode(mode) {
-    workflowMode = mode;
-    document.getElementById('btn-multi').classList.toggle('active', mode === 'multi');
-    document.getElementById('btn-single').classList.toggle('active', mode === 'single');
-  }
 
   // ── DOM refs ───────────────────────────────────────────────────────────────
   const tokenInput    = document.getElementById('token-input');
@@ -881,7 +841,7 @@
           }
           const meta = aiBubble.querySelector('.msg-meta');
           if (meta) {
-            const modeLabel = event.workflow_mode === 'single' ? 'single-agent' : 'multi-agent';
+            const modeLabel = 'single-agent';
             const traceSnip = event.trace_id ? ` · trace: ${event.trace_id.slice(0,8)}…` : '';
             meta.textContent = modeLabel + traceSnip;
           }
