@@ -60,8 +60,8 @@ async def check_rate_limit(user_id: str) -> tuple[bool, int]:
             return False, 0
         remaining = settings.rate_limit_requests - count
         return True, remaining
-    except Exception:
-        logger.exception("Redis rate limit check failed — allowing request")
+    except Exception as exc:
+        logger.warning("Redis rate limit check failed (%s) — allowing request", exc)
         return True, settings.rate_limit_requests
 
 
@@ -73,8 +73,8 @@ async def set_idempotency_key(key: str, value: str, ttl_seconds: int = 86_400) -
     try:
         result = await redis.set(f"idem:{key}", value, ex=ttl_seconds, nx=True)
         return result is True
-    except Exception:
-        logger.exception("Failed to set idempotency key %s", key)
+    except Exception as exc:
+        logger.warning("Failed to set idempotency key %s (%s)", key, exc)
         return True  # fail open
 
 
@@ -82,8 +82,8 @@ async def get_idempotency_key(key: str) -> str | None:
     redis = get_redis()
     try:
         return await redis.get(f"idem:{key}")
-    except Exception:
-        logger.exception("Failed to get idempotency key %s", key)
+    except Exception as exc:
+        logger.warning("Failed to get idempotency key %s (%s)", key, exc)
         return None
 
 
@@ -95,8 +95,8 @@ async def cache_set(key: str, value: Any, ttl_seconds: int = 300) -> None:
     redis = get_redis()
     try:
         await redis.set(f"cache:{key}", json.dumps(value), ex=ttl_seconds)
-    except Exception:
-        logger.exception("Cache set failed for key %s", key)
+    except Exception as exc:
+        logger.warning("Cache set failed for key %s (%s)", key, exc)
 
 
 async def cache_get(key: str) -> Any | None:
@@ -106,8 +106,8 @@ async def cache_get(key: str) -> Any | None:
     try:
         raw = await redis.get(f"cache:{key}")
         return json.loads(raw) if raw else None
-    except Exception:
-        logger.exception("Cache get failed for key %s", key)
+    except Exception as exc:
+        logger.warning("Cache get failed for key %s (%s)", key, exc)
         return None
 
 
@@ -115,5 +115,5 @@ async def cache_delete(key: str) -> None:
     redis = get_redis()
     try:
         await redis.delete(f"cache:{key}")
-    except Exception:
-        logger.exception("Cache delete failed for key %s", key)
+    except Exception as exc:
+        logger.warning("Cache delete failed for key %s (%s)", key, exc)

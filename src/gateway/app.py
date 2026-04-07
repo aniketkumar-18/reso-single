@@ -148,4 +148,8 @@ def create_app() -> FastAPI:
         async def serve_ui() -> FileResponse:
             return FileResponse(static_dir / "index.html")
 
+        @app.head("/", include_in_schema=False)
+        async def head_ui() -> dict:
+            return {}
+
     return app
