@@ -577,6 +577,7 @@
       document.getElementById('user-id-input').placeholder = data.user_id;
       setStatus('dev mode', true);
       updateSendBtn();
+      await loadConversationsFromServer();
     } catch (_) {
       document.getElementById('user-bar').style.display = 'none';
       /* production — user must paste token */
@@ -596,11 +597,11 @@
       messagesEl.innerHTML = '';
       messagesEl.appendChild(emptyState);
       emptyState.style.display = '';
-      renderConvList();
       document.getElementById('user-id-display').textContent = `active: ${data.user_id}`;
       input.value = '';
       setStatus('dev mode', true);
       updateSendBtn();
+      await loadConversationsFromServer();
     } catch (e) {
       alert('Failed to switch user: ' + e.message);
     }
@@ -698,14 +699,54 @@
     });
   }
 
-  function loadConversation(id) {
+  async function loadConversationsFromServer() {
+    if (!jwt) return;
+    try {
+      const res = await fetch('/api/v1/conversations?limit=30', {
+        headers: { 'Authorization': `Bearer ${jwt}` },
+      });
+      if (!res.ok) return;
+      const list = await res.json();
+      list.forEach(conv => {
+        if (!conversations[conv.id]) {
+          conversations[conv.id] = {
+            title: conv.name || conv.id.slice(0, 8) + '…',
+            messages: [],
+            loaded: false,
+          };
+        }
+      });
+      renderConvList();
+    } catch (_) {}
+  }
+
+  async function loadConversation(id) {
     conversationId = id;
     messagesEl.innerHTML = '';
     emptyState.style.display = 'none';
-    const conv = conversations[id];
-    if (conv) conv.messages.forEach(m => appendBubble(m.role, m.content, m.meta, false, m.imageUrl || null));
     renderConvList();
-    scrollBottom();
+
+    const conv = conversations[id];
+    if (conv && conv.loaded) {
+      conv.messages.forEach(m => appendBubble(m.role, m.content, m.meta, false, m.imageUrl || null));
+      scrollBottom();
+      return;
+    }
+
+    // Fetch messages from server
+    try {
+      const res = await fetch(`/api/v1/conversations/${id}/messages?limit=100`, {
+        headers: { 'Authorization': `Bearer ${jwt}` },
+      });
+      if (res.ok) {
+        const msgs = await res.json();
+        if (!conversations[id]) conversations[id] = { title: id.slice(0, 8) + '…', messages: [], loaded: false };
+        conversations[id].messages = msgs.map(m => ({ role: m.role, content: m.content }));
+        conversations[id].loaded = true;
+        msgs.forEach(m => appendBubble(m.role, m.content, null, false, null));
+        scrollBottom();
+      }
+    } catch (_) {}
   }
 
   // ── Send message ───────────────────────────────────────────────────────────
@@ -724,7 +765,7 @@
     if (!conversationId) {
       const title = text.slice(0, 40) || (currentImageUrl ? '📷 Image' : 'New conversation');
       conversationId = crypto.randomUUID();
-      conversations[conversationId] = { title, messages: [] };
+      conversations[conversationId] = { title, messages: [], loaded: true };
       renderConvList();
     }
 

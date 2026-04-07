@@ -228,6 +228,26 @@ async def chat(
     )
 
 
+@router.get("/conversations")
+async def list_conversations(
+    request: Request,
+    limit: int = 30,
+    user_id: str = Depends(require_auth),
+) -> list[dict]:
+    """Return recent conversations for the authenticated user, newest first."""
+    return await db.get_conversations_for_user(user_id, limit=limit)
+
+
+@router.get("/conversations/{conversation_id}/messages")
+async def get_messages(
+    conversation_id: str,
+    limit: int = 100,
+    user_id: str = Depends(require_auth),
+) -> list[dict]:
+    """Return messages for a conversation (oldest first)."""
+    return await db.get_conversation_history(conversation_id, limit=limit)
+
+
 @router.get("/health")
 async def health(request: Request) -> dict:
     """Liveness + readiness probe."""
