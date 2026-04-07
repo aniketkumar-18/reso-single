@@ -1,0 +1,17 @@
+-- ============================================================
+-- Domain tables already exist in Supabase (created by langgraph_app).
+-- Schema verified via PostgREST OpenAPI on 2026-03-27.
+--
+-- meal_items:         food_name, portion, portion_multiplier, occasion,
+--                     calories_kcal, protein_g, carbs_g, fat_g, logged_at (all NOT NULL)
+-- workouts:           type, duration_min, exercises, intensity, notes, logged_at (all NOT NULL)
+-- body_metrics:       weight_kg, body_fat_pct, waist_cm, notes NOT NULL, logged_at NOT NULL
+-- fitness_profiles:   goal, activity_level, target_weight_kg, weekly_workout_days,
+--                     daily_step_goal, notes, updated_at NOT NULL
+-- medical_conditions: condition, severity, notes, diagnosed_at (all NOT NULL w/ defaults)
+-- medications:        name, dosage, frequency, notes, started_at, active (all NOT NULL w/ defaults)
+--
+-- Only run this file if starting from scratch (tables do not exist).
+-- ============================================================
+
+-- No-op: tables already exist. See langgraph_app/sql/ for original DDL.

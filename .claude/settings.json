@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(supabase --version)",
+      "Bash(curl -s \"https://zbeggmfwrjotnqvzxtqd.supabase.co/rest/v1/\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiZWdnbWZ3cmpvdG5xdnp4dHFkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDg3ODc1OCwiZXhwIjoyMDg2NDU0NzU4fQ.8nsxZKZgpVmKElvjlUWnxajFOMHIhhDt7ftO0OsD7rw\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiZWdnbWZ3cmpvdG5xdnp4dHFkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDg3ODc1OCwiZXhwIjoyMDg2NDU0NzU4fQ.8nsxZKZgpVmKElvjlUWnxajFOMHIhhDt7ftO0OsD7rw\")",
+      "Bash(python -c \"from src.infra.logger import setup_logger; l = setup_logger\\(''test''\\); l.info\\(''Logger OK''\\); l.warning\\(''Warning OK''\\); l.error\\(''Error OK''\\)\")",
+      "Bash(curl -s http://localhost:8000/api/v1/health)",
+      "Bash(python3 -m json.tool)",
+      "Read(//private/tmp/**)",
+      "Bash(uvicorn --version)",
+      "Bash(python -m uvicorn --version)"
+    ]
+  }
+}

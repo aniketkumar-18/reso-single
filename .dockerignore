@@ -1,0 +1,11 @@
+.venv
+__pycache__
+*.pyc
+*.pyo
+.env
+qdrant_data
+.git
+*.png
+*.svg
+*.md
+test_*.py
