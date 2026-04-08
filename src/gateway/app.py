@@ -39,6 +39,12 @@ def _configure_logging() -> None:
     logging.basicConfig(stream=sys.stdout, level=level, force=True)
     for noisy in ("httpx", "httpcore", "openai", "langgraph", "urllib3"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
+    # transformers 5.x prints a LOAD REPORT warning for position_ids mismatch on
+    # multi-qa-MiniLM-L6-cos-v1 — benign architectural difference, safe to suppress.
+    logging.getLogger("transformers").setLevel(logging.ERROR)
+    logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
+    # mem0 internal INFO logs (index creation, etc.) are too verbose for production.
+    logging.getLogger("mem0").setLevel(logging.WARNING)
     warnings.filterwarnings(
         "ignore",
         category=UserWarning,

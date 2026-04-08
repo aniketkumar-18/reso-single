@@ -825,6 +825,7 @@ def _build_embedder_config(settings: Any) -> dict:
             "config": {
                 "model": model,
                 "embedding_dims": dims,
+                "model_kwargs": {"trust_remote_code": True},
             },
         }
 
