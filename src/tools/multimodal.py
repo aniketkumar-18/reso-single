@@ -105,4 +105,3 @@ async def log_from_image(
     }
 
 
-MULTIMODAL_TOOLS = [log_from_image]

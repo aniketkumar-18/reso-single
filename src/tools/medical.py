@@ -128,6 +128,3 @@ async def update_medication(
         return {"status": "error", "message": str(exc), "refresh": "medications"}
 
 
-from src.tools.profile import PROFILE_TOOLS
-
-MEDICAL_TOOLS = [log_medical_condition, update_medical_condition, log_medication, update_medication, *PROFILE_TOOLS]

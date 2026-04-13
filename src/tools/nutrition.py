@@ -148,6 +148,3 @@ async def delete_meal_item(meal_item_id: str, config: RunnableConfig) -> dict[st
         return {"status": "error", "message": str(exc), "refresh": "meal-items"}
 
 
-from src.tools.profile import PROFILE_TOOLS
-
-NUTRITION_TOOLS = [get_meal_items, log_meal, edit_meal_item, delete_meal_item, *PROFILE_TOOLS]

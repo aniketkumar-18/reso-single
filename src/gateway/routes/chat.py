@@ -15,64 +15,26 @@ from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import AsyncGenerator, Literal
+from typing import AsyncGenerator
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
 
 from jose import jwt as jose_jwt
 
+from src.agent.graph import invoke_graph as invoke_single, stream_graph_events as stream_single
 from src.gateway.middleware.auth import require_auth
 from src.gateway.middleware.rate_limit import require_rate_limit
 from src.gateway.middleware.tracing import get_current_trace_id
+from src.gateway.schemas import ChatRequest, ChatResponse
 from src.infra import db
 from src.infra.logger import setup_logger
-from src.agent.graph import invoke_graph as invoke_single, stream_graph_events as stream_single
 
 logger = setup_logger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["chat"])
 
 # Final-output node name for single-agent workflow
 _FINAL_NODE = {"single": "wellness_agent"}
-
-
-# ── Request / response models ──────────────────────────────────────────────────
-
-class ChatRequest(BaseModel):
-    message: str = Field(..., min_length=1, max_length=4096, description="The user's message.")
-    conversation_id: str | None = Field(
-        None, description="Existing conversation UUID. A new one is created if omitted."
-    )
-    session_id: str | None = Field(
-        None,
-        description=(
-            "Client session UUID used as LangGraph thread_id for checkpointing. "
-            "Defaults to conversation_id."
-        ),
-    )
-    image_url: str | None = Field(
-        None,
-        description=(
-            "Optional image attached by the user. "
-            "Accepts a public https:// URL or a data:image/<type>;base64,<data> string. "
-            "Supported formats: JPEG, PNG, WebP, GIF. Max 15 MB."
-        ),
-    )
-    stream: bool = Field(True, description="Set false to get a single JSON response.")
-    workflow_mode: Literal["single"] = Field(
-        "single",
-        description='"single" — unified single wellness agent (all tools, one ReAct loop).',
-    )
-
-
-class ChatResponse(BaseModel):
-    response: str
-    conversation_id: str
-    session_id: str
-    refresh_entities: list[str]
-    trace_id: str
-    workflow_mode: str
 
 
 # ── SSE generator ──────────────────────────────────────────────────────────────

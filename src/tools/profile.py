@@ -99,4 +99,3 @@ async def save_memory_fact(fact: str, domain: str, config: RunnableConfig) -> di
     return await add_memory(fact, user_id=user_id, domain=domain, run_id=session_id or None)
 
 
-PROFILE_TOOLS = [update_user_profile, save_memory_fact]

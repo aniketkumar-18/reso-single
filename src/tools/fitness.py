@@ -141,6 +141,3 @@ def calculate_macro_targets(weight_kg: float, height_cm: float, age: int, sex: s
     }
 
 
-from src.tools.profile import PROFILE_TOOLS
-
-FITNESS_TOOLS = [log_workout, log_body_metrics, update_fitness_goals, calculate_macro_targets, *PROFILE_TOOLS]

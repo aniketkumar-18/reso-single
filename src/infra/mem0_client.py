@@ -1284,7 +1284,7 @@ async def create_memory_aware_chat(
 
             # The Mem0 proxy client is synchronous — run in thread pool to avoid
             # blocking the async event loop.
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             result = await asyncio.wait_for(
                 loop.run_in_executor(
                     None,
@@ -1366,7 +1366,7 @@ async def auto_save_conversation_memory(
         if run_id:
             call_kwargs["run_id"] = run_id
 
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         await asyncio.wait_for(
             loop.run_in_executor(
                 None,
@@ -1656,6 +1656,140 @@ async def search_memories_with_graph(
     resolved_domains = domains if domains is not None else infer_domains(query)
     facts = await _supabase_search_memories(user_id, limit=limit, domains=resolved_domains)
     return {"facts": facts, "relations": []}
+
+
+# ── Feature 4 — Full CRUD API ─────────────────────────────────────────────────
+
+async def get_all_memories(
+    user_id: str,
+    run_id: str | None = None,
+) -> list[dict[str, Any]]:
+    """Return all stored memories for a user (optionally scoped to a session).
+
+    With Mem0: calls AsyncMemory.get_all() with retry + timeout.
+    Fallback: fetches from Supabase user_memories table.
+    """
+    m = await get_mem0()
+
+    if m is not None:
+        try:
+            kwargs: dict[str, Any] = {"user_id": user_id}
+            if run_id:
+                kwargs["run_id"] = run_id
+            raw = await _async_retry("get_all_memories", lambda: m.get_all(**kwargs))
+            # Mem0 returns {"results": [...]} or a plain list depending on version
+            if isinstance(raw, dict):
+                return raw.get("results", [])
+            return raw if isinstance(raw, list) else []
+        except Exception as exc:
+            logger.warning("Mem0 get_all_memories failed after retries: %s — falling back", exc)
+
+    # Supabase fallback
+    from src.infra import db
+    client = await db.get_client()
+    if client is None:
+        return []
+    try:
+        res = (
+            await client.table("user_memories")
+            .select("*")
+            .eq("user_id", user_id)
+            .order("created_at", desc=True)
+            .execute()
+        )
+        return res.data or []
+    except Exception as exc:
+        logger.warning("Supabase get_all_memories failed for user %s: %s", user_id, exc)
+        return []
+
+
+async def get_memory(memory_id: str) -> dict[str, Any] | None:
+    """Fetch a single memory by its Mem0 ID.
+
+    Returns None if Mem0 is not configured or the memory is not found.
+    """
+    m = await get_mem0()
+    if m is None:
+        return None
+    try:
+        return await _async_retry("get_memory", lambda: m.get(memory_id))
+    except Exception as exc:
+        logger.warning("Mem0 get_memory failed for id=%s: %s", memory_id, exc)
+        return None
+
+
+async def update_memory(memory_id: str, data: str) -> dict[str, Any]:
+    """Replace the text of an existing memory.
+
+    Args:
+        memory_id: Mem0 memory UUID.
+        data:      New text content for the memory.
+    """
+    m = await get_mem0()
+    if m is None:
+        return {"status": "error", "reason": "Mem0 not configured"}
+    try:
+        result = await _async_retry("update_memory", lambda: m.update(memory_id, data))
+        logger.info("Mem0 memory updated — id=%s", memory_id)
+        return {"status": "updated", "memory_id": memory_id, "result": result}
+    except Exception as exc:
+        logger.warning("Mem0 update_memory failed for id=%s: %s", memory_id, exc)
+        return {"status": "error", "memory_id": memory_id, "error": str(exc)}
+
+
+async def delete_memory(memory_id: str) -> dict[str, Any]:
+    """Delete a single memory by its Mem0 ID."""
+    m = await get_mem0()
+    if m is None:
+        return {"status": "error", "reason": "Mem0 not configured"}
+    try:
+        result = await _async_retry("delete_memory", lambda: m.delete(memory_id))
+        logger.info("Mem0 memory deleted — id=%s", memory_id)
+        return {"status": "deleted", "memory_id": memory_id, "result": result}
+    except Exception as exc:
+        logger.warning("Mem0 delete_memory failed for id=%s: %s", memory_id, exc)
+        return {"status": "error", "memory_id": memory_id, "error": str(exc)}
+
+
+async def delete_all_memories(
+    user_id: str,
+    run_id: str | None = None,
+) -> dict[str, Any]:
+    """Delete all memories for a user, optionally scoped to a session.
+
+    With Mem0: calls AsyncMemory.delete_all() with retry + timeout.
+    No Supabase fallback (destructive operation — only executes if Mem0 configured).
+    """
+    m = await get_mem0()
+    if m is None:
+        return {"status": "error", "reason": "Mem0 not configured"}
+    try:
+        kwargs: dict[str, Any] = {"user_id": user_id}
+        if run_id:
+            kwargs["run_id"] = run_id
+        result = await _async_retry("delete_all_memories", lambda: m.delete_all(**kwargs))
+        logger.info("Mem0 all memories deleted — user=%s run_id=%s", user_id, run_id)
+        return {"status": "deleted_all", "user_id": user_id, "run_id": run_id, "result": result}
+    except Exception as exc:
+        logger.warning("Mem0 delete_all_memories failed for user=%s: %s", user_id, exc)
+        return {"status": "error", "user_id": user_id, "error": str(exc)}
+
+
+async def get_memory_history(memory_id: str) -> list[dict[str, Any]]:
+    """Return the change history for a specific memory (ADD → UPDATE → DELETE chain).
+
+    Useful for auditing how a memory evolved over time.
+    Returns an empty list if Mem0 is not configured or history is unavailable.
+    """
+    m = await get_mem0()
+    if m is None:
+        return []
+    try:
+        result = await _async_retry("get_memory_history", lambda: m.history(memory_id))
+        return result if isinstance(result, list) else []
+    except Exception as exc:
+        logger.warning("Mem0 get_memory_history failed for id=%s: %s", memory_id, exc)
+        return []
 
 
 # ── Feature 5 — Multimodal Support ────────────────────────────────────────────
@@ -2009,7 +2143,7 @@ async def validate_mem0_config() -> dict[str, str]:
             from qdrant_client import QdrantClient
             qc = QdrantClient(url=settings.qdrant_url, api_key=settings.qdrant_api_key or None)
             await asyncio.wait_for(
-                asyncio.get_event_loop().run_in_executor(None, qc.get_collections),
+                asyncio.get_running_loop().run_in_executor(None, qc.get_collections),
                 timeout=8.0,
             )
             status["vector_store"] = "ok"
