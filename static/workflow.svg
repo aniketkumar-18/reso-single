@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1640" height="2480" viewBox="0 0 1640 2480" font-family="'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif">
+<defs>
+  <marker id="ah"  markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,9 3,0 6" fill="#475569"/></marker>
+  <marker id="ahp" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,9 3,0 6" fill="#7c3aed"/></marker>
+  <marker id="ahg" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,9 3,0 6" fill="#059669"/></marker>
+  <marker id="ahk" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,9 3,0 6" fill="#db2777"/></marker>
+  <marker id="ahi" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,9 3,0 6" fill="#4f46e5"/></marker>
+  <marker id="aho" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,9 3,0 6" fill="#d97706"/></marker>
+  <marker id="ahc" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,9 3,0 6" fill="#0369a1"/></marker>
+  <filter id="sh" x="-5%" y="-5%" width="110%" height="110%">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00000018"/>
+  </filter>
+</defs>
+
+<!-- ░░░ BACKGROUND ░░░ -->
+<rect width="1640" height="2480" fill="#f1f5f9"/>
+
+<!-- ████ TITLE BAR ████ -->
+<rect x="0" y="0" width="1640" height="70" fill="#0f172a"/>
+<text x="820" y="34" text-anchor="middle" font-size="21" font-weight="700" fill="white">Reso — Single-Agent Wellness Pipeline: End-to-End Workflow</text>
+<text x="820" y="56" text-anchor="middle" font-size="12" fill="#94a3b8">LangGraph · Mem0 OSS (Qdrant + Neo4j + nomic-embed-text-v1.5, 768 dims) · FastAPI SSE · Supabase</text>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!--  A — MAIN PIPELINE FLOW                                          -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<rect x="12" y="80" width="1616" height="165" rx="10" fill="white" filter="url(#sh)"/>
+<text x="28" y="100" font-size="10" font-weight="700" fill="#94a3b8" letter-spacing="2">A — MAIN PIPELINE FLOW</text>
+
+<!-- Client (request) -->
+<rect x="24" y="107" width="130" height="70" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+<text x="89" y="131" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4ed8">Client</text>
+<text x="89" y="148" text-anchor="middle" font-size="10" fill="#3b82f6">Browser / Mobile</text>
+<text x="89" y="163" text-anchor="middle" font-size="10" fill="#64748b">POST /api/v1/chat</text>
+
+<!-- Arrow → Gateway -->
+<line x1="154" y1="142" x2="193" y2="142" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+
+<!-- Gateway box -->
+<rect x="195" y="99" width="218" height="120" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="304" y="120" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">Gateway Layer</text>
+<line x1="207" y1="126" x2="402" y2="126" stroke="#fcd34d" stroke-width="1"/>
+<text x="210" y="141" font-size="11" fill="#78350f">🔐  Auth (JWT) → user_id</text>
+<text x="210" y="156" font-size="11" fill="#78350f">⏱  Rate limit (Redis)</text>
+<text x="210" y="171" font-size="11" fill="#78350f">📨  chat() handler</text>
+<text x="210" y="186" font-size="11" fill="#78350f">🌊  EventSourceResponse (SSE)</text>
+<text x="210" y="201" font-size="9.5" fill="#b45309" font-style="italic">routes/chat.py:161</text>
+
+<!-- Arrow → LangGraph -->
+<line x1="413" y1="159" x2="455" y2="159" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+
+<!-- LangGraph Pipeline box -->
+<rect x="457" y="99" width="640" height="120" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+<text x="777" y="120" text-anchor="middle" font-size="13" font-weight="700" fill="#5b21b6">LangGraph Pipeline — GraphState TypedDict · MemorySaver checkpointer</text>
+<line x1="469" y1="126" x2="1085" y2="126" stroke="#c4b5fd" stroke-width="1"/>
+
+<!-- START node -->
+<rect x="475" y="136" width="58" height="26" rx="13" fill="#7c3aed"/>
+<text x="504" y="153" text-anchor="middle" font-size="11" font-weight="600" fill="white">START</text>
+<!-- →  -->
+<line x1="533" y1="149" x2="555" y2="149" stroke="#7c3aed" stroke-width="2" marker-end="url(#ahp)"/>
+
+<!-- context_hydration -->
+<rect x="557" y="131" width="200" height="42" rx="6" fill="#6d28d9"/>
+<text x="657" y="149" text-anchor="middle" font-size="11" font-weight="600" fill="white">context_hydration_node</text>
+<text x="657" y="164" text-anchor="middle" font-size="9" fill="#ddd6fe">context_hydration.py:92</text>
+<!-- → -->
+<line x1="757" y1="152" x2="790" y2="152" stroke="#7c3aed" stroke-width="2" marker-end="url(#ahp)"/>
+
+<!-- wellness_agent -->
+<rect x="792" y="131" width="195" height="42" rx="6" fill="#6d28d9"/>
+<text x="889" y="149" text-anchor="middle" font-size="11" font-weight="600" fill="white">wellness_agent_node</text>
+<text x="889" y="164" text-anchor="middle" font-size="9" fill="#ddd6fe">wellness_agent.py:73</text>
+<!-- → -->
+<line x1="987" y1="152" x2="1010" y2="152" stroke="#7c3aed" stroke-width="2" marker-end="url(#ahp)"/>
+
+<!-- END -->
+<rect x="1012" y="136" width="50" height="26" rx="13" fill="#7c3aed"/>
+<text x="1037" y="153" text-anchor="middle" font-size="11" font-weight="600" fill="white">END</text>
+
+<!-- GraphState arrow label -->
+<text x="757" y="145" text-anchor="middle" font-size="9" fill="#7c3aed">GraphState</text>
+
+<!-- checkpointer note -->
+<text x="777" y="205" text-anchor="middle" font-size="10" fill="#7c3aed" font-style="italic">per-session thread_id → LangGraph replays conversation across requests</text>
+
+<!-- Arrow → SSE -->
+<line x1="1097" y1="159" x2="1134" y2="159" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+
+<!-- SSE box -->
+<rect x="1136" y="107" width="148" height="70" rx="8" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+<text x="1210" y="130" text-anchor="middle" font-size="13" font-weight="700" fill="#0369a1">SSE Stream</text>
+<text x="1210" y="147" text-anchor="middle" font-size="10" fill="#0284c7">thinking → tokens</text>
+<text x="1210" y="162" text-anchor="middle" font-size="10" fill="#0284c7">→ done event</text>
+
+<!-- Arrow → Client response -->
+<line x1="1284" y1="142" x2="1322" y2="142" stroke="#475569" stroke-width="2" marker-end="url(#ah)"/>
+
+<!-- Client (response) -->
+<rect x="1324" y="107" width="130" height="70" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+<text x="1389" y="130" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4ed8">Client</text>
+<text x="1389" y="147" text-anchor="middle" font-size="10" fill="#3b82f6">Real-time tokens</text>
+<text x="1389" y="162" text-anchor="middle" font-size="10" fill="#64748b">+ refresh_entities</text>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!--  B — NODE DETAILS                                                -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<text x="28" y="268" font-size="10" font-weight="700" fill="#94a3b8" letter-spacing="2">B — NODE DETAILS</text>
+
+<!-- ─────── Context Hydration (LEFT) ─────── -->
+<rect x="12" y="276" width="786" height="470" rx="10" fill="white" filter="url(#sh)"/>
+<!-- header -->
+<rect x="12" y="276" width="786" height="38" rx="10" fill="#059669"/>
+<rect x="12" y="296" width="786" height="18" fill="#059669"/>
+<text x="405" y="300" text-anchor="middle" font-size="14" font-weight="700" fill="white">Node 1 — Context Hydration</text>
+<text x="405" y="316" text-anchor="middle" font-size="11" fill="#d1fae5">All 5 fetches run in parallel · asyncio.gather() · before agent executes</text>
+
+<!-- gather dashed box -->
+<rect x="24" y="325" width="762" height="316" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1" stroke-dasharray="5,3"/>
+<text x="40" y="341" font-size="11" font-weight="600" fill="#166534">asyncio.gather(</text>
+<!-- vertical stem -->
+<line x1="44" y1="344" x2="44" y2="626" stroke="#86efac" stroke-width="2"/>
+
+<!-- Task 1: Profile -->
+<line x1="44" y1="360" x2="64" y2="360" stroke="#86efac" stroke-width="2" marker-end="url(#ahg)"/>
+<rect x="66" y="348" width="706" height="26" rx="5" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+<text x="82" y="365" font-size="11" fill="#14532d" font-family="'Cascadia Code','Fira Code',monospace">cache_get("profile:{user_id}")  →  DB fallback on miss  →  cache 300s TTL</text>
+
+<!-- Task 2: History -->
+<line x1="44" y1="396" x2="64" y2="396" stroke="#86efac" stroke-width="2" marker-end="url(#ahg)"/>
+<rect x="66" y="384" width="706" height="26" rx="5" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+<text x="82" y="401" font-size="11" fill="#14532d" font-family="'Cascadia Code','Fira Code',monospace">db.get_conversation_history(conversation_id)</text>
+
+<!-- Task 3: Memory (highlighted) -->
+<line x1="44" y1="440" x2="64" y2="440" stroke="#86efac" stroke-width="2" marker-end="url(#ahg)"/>
+<rect x="66" y="420" width="706" height="46" rx="5" fill="#fce7f3" stroke="#db2777" stroke-width="2"/>
+<text x="82" y="437" font-size="11" fill="#9d174d" font-weight="600" font-family="'Cascadia Code','Fira Code',monospace">infer_domains(user_message)  →  ["nutrition","fitness","medical","general"]</text>
+<text x="82" y="455" font-size="11" fill="#db2777" font-family="'Cascadia Code','Fira Code',monospace">  └→ search_memories_with_graph(query, domains)  ← <tspan font-weight="700">MEM0 CALL #1 (SEARCH)</tspan></text>
+
+<!-- Task 4: Meals -->
+<line x1="44" y1="488" x2="64" y2="488" stroke="#86efac" stroke-width="2" marker-end="url(#ahg)"/>
+<rect x="66" y="476" width="706" height="26" rx="5" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+<text x="82" y="493" font-size="11" fill="#14532d" font-family="'Cascadia Code','Fira Code',monospace">db.get_meal_items(user_id, date=today, limit=30)</text>
+
+<!-- Task 5: Constraints -->
+<line x1="44" y1="524" x2="64" y2="524" stroke="#86efac" stroke-width="2" marker-end="url(#ahg)"/>
+<rect x="66" y="512" width="706" height="26" rx="5" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+<text x="82" y="529" font-size="11" fill="#14532d" font-family="'Cascadia Code','Fira Code',monospace">derive_constraint_rules(profile)  →  "No high-GI foods (Type 2 Diabetes)", ...</text>
+
+<text x="60" y="556" font-size="11" font-weight="600" fill="#166534">)</text>
+
+<!-- Output pills -->
+<text x="40" y="574" font-size="11" font-weight="600" fill="#065f46">→ GraphState populated:</text>
+<rect x="40"  y="582" width="118" height="22" rx="11" fill="#d1fae5" stroke="#059669" stroke-width="1"/>
+<text x="99"  y="597" text-anchor="middle" font-size="10" fill="#065f46">user_profile</text>
+<rect x="165" y="582" width="158" height="22" rx="11" fill="#d1fae5" stroke="#059669" stroke-width="1"/>
+<text x="244" y="597" text-anchor="middle" font-size="10" fill="#065f46">conversation_history</text>
+<rect x="330" y="582" width="130" height="22" rx="11" fill="#fce7f3" stroke="#db2777" stroke-width="1"/>
+<text x="395" y="597" text-anchor="middle" font-size="10" fill="#9d174d">memory_context</text>
+<rect x="467" y="582" width="122" height="22" rx="11" fill="#fce7f3" stroke="#db2777" stroke-width="1"/>
+<text x="528" y="597" text-anchor="middle" font-size="10" fill="#9d174d">graph_relations</text>
+<rect x="596" y="582" width="130" height="22" rx="11" fill="#d1fae5" stroke="#059669" stroke-width="1"/>
+<text x="661" y="597" text-anchor="middle" font-size="10" fill="#065f46">constraint_rules</text>
+<rect x="40" y="612" width="145" height="22" rx="11" fill="#d1fae5" stroke="#059669" stroke-width="1"/>
+<text x="112" y="627" text-anchor="middle" font-size="10" fill="#065f46">meal_items_context</text>
+<rect x="192" y="612" width="215" height="22" rx="11" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1"/>
+<text x="299" y="627" text-anchor="middle" font-size="10" fill="#3730a3">image_url (optional, multimodal)</text>
+
+<!-- 6-section System Prompt note -->
+<rect x="24" y="652" width="762" height="82" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+<text x="40" y="668" font-size="11" font-weight="600" fill="#475569">→ System Prompt injected with 6 sections:</text>
+<text x="40" y="684" font-size="10" fill="#64748b">① Profile (DB/cache)  ② Memories from Mem0  ③ Graph Relations (Neo4j)  ④ Safety Constraints  ⑤ Today's Meals (with IDs)  ⑥ Response Format</text>
+<text x="40" y="700" font-size="10" fill="#db2777">   Example: "• User is vegetarian  • No high-GI foods (Diabetes)  • Breakfast: Oatmeal 300kcal [id: abc-123]"</text>
+<text x="40" y="716" font-size="9" fill="#94a3b8" font-style="italic">   prompts.py: WELLNESS_AGENT_SYSTEM (lines 22–202)</text>
+
+<!-- ─────── Wellness Agent (RIGHT) ─────── -->
+<rect x="812" y="276" width="816" height="470" rx="10" fill="white" filter="url(#sh)"/>
+<!-- header -->
+<rect x="812" y="276" width="816" height="38" rx="10" fill="#4f46e5"/>
+<rect x="812" y="296" width="816" height="18" fill="#4f46e5"/>
+<text x="1220" y="300" text-anchor="middle" font-size="14" font-weight="700" fill="white">Node 2 — Wellness Agent (ReAct Loop)</text>
+<text x="1220" y="316" text-anchor="middle" font-size="11" fill="#c7d2fe">create_react_agent(llm=gpt-5.4, tools=13) · wells_agent.py:73 · streaming=True, tag="final_response"</text>
+
+<!-- Step 1 -->
+<rect x="825" y="327" width="790" height="26" rx="5" fill="#eef2ff" stroke="#818cf8" stroke-width="1"/>
+<text x="840" y="344" font-size="11" fill="#3730a3"><tspan font-weight="700">①</tspan> Build system prompt with all 6 context sections injected from GraphState</text>
+
+<!-- Step 2 -->
+<rect x="825" y="360" width="790" height="26" rx="5" fill="#eef2ff" stroke="#818cf8" stroke-width="1"/>
+<text x="840" y="377" font-size="11" fill="#3730a3"><tspan font-weight="700">②</tspan> Build message list: conversation_history pairs + current HumanMessage (text or multimodal)</text>
+
+<!-- ReAct loop dashed box -->
+<rect x="825" y="393" width="790" height="218" rx="6" fill="#fafafa" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5,3"/>
+<text x="841" y="410" font-size="11" font-weight="700" fill="#4f46e5">③ ReAct Loop — agent.ainvoke(messages)</text>
+
+<!-- LLM box -->
+<rect x="841" y="418" width="200" height="26" rx="13" fill="#4f46e5"/>
+<text x="941" y="435" text-anchor="middle" font-size="11" font-weight="600" fill="white">LLM emits tool_call(s)</text>
+
+<!-- Arrow LLM → ToolNode -->
+<line x1="1041" y1="431" x2="1075" y2="431" stroke="#4f46e5" stroke-width="2" marker-end="url(#ahi)"/>
+
+<!-- ToolNode -->
+<rect x="1077" y="418" width="110" height="26" rx="5" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
+<text x="1132" y="435" text-anchor="middle" font-size="11" font-weight="600" fill="#3730a3">ToolNode</text>
+
+<!-- ToolMessage loop back -->
+<path d="M1187 431 Q1230 431 1230 480 Q1230 526 1185 526 L840 526" stroke="#6366f1" stroke-width="1.5" fill="none" marker-end="url(#ahi)"/>
+<text x="1238" y="482" font-size="10" fill="#6366f1">ToolMsg</text>
+
+<!-- Tools (3 rows) -->
+<text x="841" y="547" font-size="10" font-weight="600" fill="#475569">Tools available:</text>
+
+<!-- Nutrition tools -->
+<rect x="841" y="553" width="94" height="19" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/><text x="888" y="566" text-anchor="middle" font-size="9" fill="#92400e">log_meal</text>
+<rect x="941" y="553" width="110" height="19" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/><text x="996" y="566" text-anchor="middle" font-size="9" fill="#92400e">edit_meal_item</text>
+<rect x="1057" y="553" width="120" height="19" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/><text x="1117" y="566" text-anchor="middle" font-size="9" fill="#92400e">delete_meal_item</text>
+<rect x="1183" y="553" width="118" height="19" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/><text x="1242" y="566" text-anchor="middle" font-size="9" fill="#92400e">get_meal_items</text>
+<text x="1310" y="564" font-size="10" fill="#f59e0b">🍎 Nutrition</text>
+
+<!-- Fitness tools -->
+<rect x="841" y="578" width="104" height="19" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/><text x="893" y="591" text-anchor="middle" font-size="9" fill="#14532d">log_workout</text>
+<rect x="951" y="578" width="128" height="19" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/><text x="1015" y="591" text-anchor="middle" font-size="9" fill="#14532d">log_body_metrics</text>
+<rect x="1085" y="578" width="148" height="19" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/><text x="1159" y="591" text-anchor="middle" font-size="9" fill="#14532d">update_fitness_goals</text>
+<rect x="1239" y="578" width="160" height="19" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/><text x="1319" y="591" text-anchor="middle" font-size="9" fill="#14532d">calculate_macro_targets</text>
+<text x="1410" y="589" font-size="10" fill="#16a34a">💪 Fitness</text>
+
+<!-- Medical + Profile + Mem0 tools -->
+<rect x="841" y="603" width="154" height="19" rx="4" fill="#fce7f3" stroke="#db2777" stroke-width="1"/><text x="918" y="616" text-anchor="middle" font-size="9" fill="#9d174d">log_medical_condition</text>
+<rect x="1001" y="603" width="112" height="19" rx="4" fill="#fce7f3" stroke="#db2777" stroke-width="1"/><text x="1057" y="616" text-anchor="middle" font-size="9" fill="#9d174d">log_medication</text>
+<rect x="1119" y="603" width="128" height="19" rx="4" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/><text x="1183" y="616" text-anchor="middle" font-size="9" fill="#3730a3">update_user_profile</text>
+<rect x="1253" y="603" width="96" height="19" rx="4" fill="#fce7f3" stroke="#db2777" stroke-width="1"/><text x="1301" y="616" text-anchor="middle" font-size="9" fill="#9d174d">log_from_image</text>
+<text x="1360" y="614" font-size="10" fill="#db2777">⚕️ Med</text>
+<!-- save_memory_fact on new row highlighted -->
+<rect x="841" y="627" width="268" height="19" rx="4" fill="#fce7f3" stroke="#db2777" stroke-width="2"/><text x="975" y="640" text-anchor="middle" font-size="9" fill="#9d174d" font-weight="700">save_memory_fact  ← MEM0 CALL #2 (explicit ADD)</text>
+
+<!-- No tool calls → final response -->
+<rect x="841" y="652" width="318" height="24" rx="12" fill="#4f46e5"/>
+<text x="1000" y="668" text-anchor="middle" font-size="11" font-weight="600" fill="white">No tool_calls → Final AIMessage</text>
+
+<!-- aggregated_response → SSE -->
+<line x1="1159" y1="664" x2="1196" y2="664" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ahi)"/>
+<rect x="1198" y="649" width="204" height="28" rx="5" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+<text x="1300" y="667" text-anchor="middle" font-size="10" fill="#3730a3">aggregated_response → SSE stream</text>
+
+<!-- Auto-save background -->
+<rect x="825" y="620" width="790" height="36" rx="5" fill="#fff7ed" stroke="#f59e0b" stroke-width="1" opacity="0.5"/>
+<rect x="825" y="685" width="790" height="50" rx="6" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="840" y="701" font-size="11" fill="#92400e" font-weight="700">④ auto_save_conversation_memory()  ← MEM0 CALL #3 (background, non-blocking)</text>
+<text x="840" y="717" font-size="10" fill="#78350f">   get_mem0_proxy() → proxy.chat.completions.create(user+assistant) → Qdrant only · 15s timeout</text>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!--  C — MEM0 CALL POINTS                                            -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<text x="28" y="768" font-size="10" font-weight="700" fill="#94a3b8" letter-spacing="2">C — MEM0 CALL POINTS</text>
+
+<!-- ── Call #1 SEARCH ── -->
+<rect x="12" y="776" width="512" height="330" rx="10" fill="white" filter="url(#sh)"/>
+<rect x="12" y="776" width="512" height="34" rx="10" fill="#db2777"/>
+<rect x="12" y="796" width="512" height="14" fill="#db2777"/>
+<text x="268" y="798" text-anchor="middle" font-size="13" font-weight="700" fill="white">CALL #1 — SEARCH</text>
+<text x="268" y="812" text-anchor="middle" font-size="10" fill="#fce7f3">search_memories_with_graph() · mem0_client.py:1583</text>
+
+<text x="28" y="832" font-size="11" fill="#374151" font-family="'Cascadia Code','Fira Code',monospace">infer_domains(user_message)</text>
+<line x1="44" y1="835" x2="44" y2="840" stroke="#db2777" stroke-width="1.5"/>
+<text x="55" y="847" font-size="10" fill="#64748b">→ build_domain_filter(domains) → Qdrant metadata filter</text>
+
+<line x1="28" y1="856" x2="510" y2="856" stroke="#fce7f3" stroke-width="1"/>
+<text x="28" y="871" font-size="11" font-weight="600" fill="#9d174d">m.search(query, filters, rerank=True)</text>
+
+<!-- Vector search sub-box -->
+<rect x="28" y="878" width="490" height="26" rx="5" fill="#fdf2f8" stroke="#f9a8d4" stroke-width="1"/>
+<text x="44" y="895" font-size="10" fill="#831843">Vector Search: Qdrant (nomic-embed-text-v1.5, 768 dims) → cosine similarity top-10</text>
+
+<!-- Reranker sub-box -->
+<rect x="28" y="910" width="490" height="26" rx="5" fill="#fdf2f8" stroke="#f9a8d4" stroke-width="1"/>
+<text x="44" y="927" font-size="10" fill="#831843">LLM Reranker (Feature 13): scores top-10 by wellness relevance → returns top-5</text>
+
+<!-- Neo4j sub-box -->
+<rect x="28" y="942" width="490" height="26" rx="5" fill="#fdf2f8" stroke="#f9a8d4" stroke-width="1"/>
+<text x="44" y="959" font-size="10" fill="#831843">Graph Retrieval: Neo4j entity relationships (e.g., Diabetes → managed_with → Metformin)</text>
+
+<line x1="28" y1="978" x2="510" y2="978" stroke="#fce7f3" stroke-width="1"/>
+<text x="28" y="994" font-size="11" font-weight="600" fill="#9d174d">Returns: </text>
+<rect x="28" y="1000" width="490" height="28" rx="5" fill="#fce7f3"/>
+<text x="44" y="1018" font-size="10" fill="#831843" font-family="'Cascadia Code','Fira Code',monospace">{"facts": ["User is vegetarian", ...], "relations": [{...}]}</text>
+
+<text x="28" y="1047" font-size="10" fill="#64748b">→ Injected into system prompt as "What You Know About This User"</text>
+
+<!-- ── Call #2 ADD ── -->
+<rect x="564" y="776" width="512" height="330" rx="10" fill="white" filter="url(#sh)"/>
+<rect x="564" y="776" width="512" height="34" rx="10" fill="#db2777"/>
+<rect x="564" y="796" width="512" height="14" fill="#db2777"/>
+<text x="820" y="798" text-anchor="middle" font-size="13" font-weight="700" fill="white">CALL #2 — ADD (Explicit)</text>
+<text x="820" y="812" text-anchor="middle" font-size="10" fill="#fce7f3">add_memory(fact, user_id, domain) · mem0_client.py:1525 · via save_memory_fact tool</text>
+
+<text x="580" y="832" font-size="11" fill="#374151" font-family="'Cascadia Code','Fira Code',monospace">m.add(messages, user_id, metadata={domain})</text>
+
+<line x1="580" y1="842" x2="1064" y2="842" stroke="#fce7f3" stroke-width="1"/>
+<text x="580" y="858" font-size="11" font-weight="600" fill="#9d174d">Feature 6 — WELLNESS_FACT_EXTRACTION_PROMPT</text>
+<rect x="580" y="864" width="490" height="38" rx="5" fill="#fdf2f8" stroke="#f9a8d4" stroke-width="1"/>
+<text x="596" y="878" font-size="10" fill="#831843">Filters: only persistent health facts pass</text>
+<text x="596" y="893" font-size="10" fill="#831843">Rejects: greetings, one-off statements, non-health facts</text>
+
+<text x="580" y="918" font-size="11" font-weight="600" fill="#9d174d">Feature 7 — WELLNESS_UPDATE_MEMORY_PROMPT</text>
+<rect x="580" y="924" width="490" height="38" rx="5" fill="#fdf2f8" stroke="#f9a8d4" stroke-width="1"/>
+<text x="596" y="938" font-size="10" fill="#831843">Reconciles with existing memories → decides:</text>
+<text x="596" y="953" font-size="10" fill="#831843">ADD · UPDATE (merge) · DELETE (contradiction) · NONE (duplicate)</text>
+
+<line x1="580" y1="972" x2="1064" y2="972" stroke="#fce7f3" stroke-width="1"/>
+<text x="580" y="988" font-size="11" font-weight="600" fill="#9d174d">Storage:</text>
+<rect x="580" y="994" width="236" height="26" rx="5" fill="#fdf2f8" stroke="#f9a8d4" stroke-width="1"/>
+<text x="698" y="1011" text-anchor="middle" font-size="10" fill="#831843">Embed → Qdrant (768 dims)</text>
+<rect x="822" y="994" width="236" height="26" rx="5" fill="#fdf2f8" stroke="#f9a8d4" stroke-width="1"/>
+<text x="940" y="1011" text-anchor="middle" font-size="10" fill="#831843">Entities → Neo4j graph</text>
+
+<text x="580" y="1047" font-size="10" fill="#64748b">metadata: {domain, user_id, run_id(session_id)} for filtered retrieval</text>
+
+<!-- ── Call #3 AUTO-SAVE ── -->
+<rect x="1116" y="776" width="512" height="330" rx="10" fill="white" filter="url(#sh)"/>
+<rect x="1116" y="776" width="512" height="34" rx="10" fill="#d97706"/>
+<rect x="1116" y="796" width="512" height="14" fill="#d97706"/>
+<text x="1372" y="798" text-anchor="middle" font-size="13" font-weight="700" fill="white">CALL #3 — AUTO-SAVE (Feature 8)</text>
+<text x="1372" y="812" text-anchor="middle" font-size="10" fill="#fef3c7">auto_save_conversation_memory() · mem0_client.py:1316 · every turn</text>
+
+<text x="1132" y="832" font-size="11" fill="#374151" font-family="'Cascadia Code','Fira Code',monospace">proxy = await get_mem0_proxy()</text>
+<rect x="1132" y="840" width="480" height="28" rx="5" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
+<text x="1148" y="858" font-size="10" fill="#78350f">Mem0 OpenAI-compatible proxy · Qdrant only (no Neo4j graph)</text>
+
+<line x1="1132" y1="878" x2="1608" y2="878" stroke="#fef3c7" stroke-width="1"/>
+<text x="1132" y="894" font-size="11" font-weight="600" fill="#92400e">proxy.chat.completions.create(...)</text>
+<rect x="1132" y="900" width="480" height="50" rx="5" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
+<text x="1148" y="916" font-size="10" fill="#78350f">messages: [user_message, assistant_response]</text>
+<text x="1148" y="930" font-size="10" fill="#78350f">Proxy auto-extracts facts via Feature 6/7 prompts</text>
+<text x="1148" y="944" font-size="10" fill="#78350f">Saves facts directly to Qdrant</text>
+
+<line x1="1132" y1="962" x2="1608" y2="962" stroke="#fef3c7" stroke-width="1"/>
+
+<rect x="1132" y="970" width="480" height="50" rx="5" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+<text x="1148" y="985" font-size="11" font-weight="600" fill="#9a3412">Non-blocking guarantee:</text>
+<text x="1148" y="1001" font-size="10" fill="#78350f">asyncio.wait_for(..., timeout=15s) — user response</text>
+<text x="1148" y="1015" font-size="10" fill="#78350f">never delayed; failure is silently swallowed</text>
+
+<text x="1132" y="1047" font-size="10" fill="#64748b">Runs after agent response is sent → no latency impact</text>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!--  D — MEMORY WRITE & READ FLOWS                                   -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<text x="28" y="1128" font-size="10" font-weight="700" fill="#94a3b8" letter-spacing="2">D — MEMORY WRITE &amp; READ FLOWS</text>
+
+<!-- ── Memory Write (LEFT) ── -->
+<rect x="12" y="1138" width="786" height="294" rx="10" fill="white" filter="url(#sh)"/>
+<rect x="12" y="1138" width="786" height="34" rx="10" fill="#7c3aed"/>
+<rect x="12" y="1158" width="786" height="14" fill="#7c3aed"/>
+<text x="405" y="1160" text-anchor="middle" font-size="13" font-weight="700" fill="white">Memory Write Flow</text>
+<text x="405" y="1174" text-anchor="middle" font-size="10" fill="#ddd6fe">How a health fact gets stored (via Call #2 or Call #3)</text>
+
+<!-- Write flow steps with arrows -->
+<!-- Step boxes -->
+<rect x="28" y="1184" width="756" height="32" rx="6" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1"/>
+<text x="406" y="1204" text-anchor="middle" font-size="11" fill="#4c1d95">User: "I'm vegetarian and allergic to peanuts"</text>
+
+<line x1="406" y1="1216" x2="406" y2="1230" stroke="#8b5cf6" stroke-width="2" marker-end="url(#ahp)"/>
+
+<rect x="28" y="1232" width="756" height="38" rx="6" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+<text x="406" y="1248" text-anchor="middle" font-size="11" font-weight="600" fill="#9d174d">WELLNESS_FACT_EXTRACTION_PROMPT (Feature 6)</text>
+<text x="406" y="1262" text-anchor="middle" font-size="10" fill="#9d174d">"User is vegetarian" ✓    "User is allergic to peanuts" ✓</text>
+
+<line x1="406" y1="1270" x2="406" y2="1284" stroke="#8b5cf6" stroke-width="2" marker-end="url(#ahp)"/>
+
+<rect x="28" y="1286" width="756" height="38" rx="6" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+<text x="406" y="1302" text-anchor="middle" font-size="11" font-weight="600" fill="#9d174d">WELLNESS_UPDATE_MEMORY_PROMPT (Feature 7)</text>
+<text x="406" y="1316" text-anchor="middle" font-size="10" fill="#9d174d">No existing memory → decision: ADD (both facts)</text>
+
+<line x1="406" y1="1324" x2="406" y2="1338" stroke="#8b5cf6" stroke-width="2" marker-end="url(#ahp)"/>
+
+<rect x="28" y="1340" width="756" height="28" rx="6" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1"/>
+<text x="406" y="1358" text-anchor="middle" font-size="10" fill="#4c1d95">nomic-embed-text-v1.5 (trust_remote_code=True, model_kwargs) → 768-dim vector</text>
+
+<line x1="230" y1="1368" x2="230" y2="1378" stroke="#7c3aed" stroke-width="2" marker-end="url(#ahp)"/>
+<line x1="582" y1="1368" x2="582" y2="1378" stroke="#7c3aed" stroke-width="2" marker-end="url(#ahp)"/>
+
+<!-- Storage destinations side by side -->
+<rect x="28" y="1380" width="372" height="40" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+<text x="214" y="1396" text-anchor="middle" font-size="11" font-weight="600" fill="#0369a1">Qdrant — reso_memories</text>
+<text x="214" y="1411" text-anchor="middle" font-size="9" fill="#0369a1">{text, domain, user_id, run_id} + 768-dim vector</text>
+
+<rect x="412" y="1380" width="372" height="40" rx="6" fill="#faf5ff" stroke="#9333ea" stroke-width="1.5"/>
+<text x="598" y="1396" text-anchor="middle" font-size="11" font-weight="600" fill="#7e22ce">Neo4j Aura (graph store)</text>
+<text x="598" y="1411" text-anchor="middle" font-size="9" fill="#7e22ce">(user) -[IS]→ (vegetarian)  ·  (user) -[ALLERGIC_TO]→ (peanuts)</text>
+
+<!-- ── Memory Read (RIGHT) ── -->
+<rect x="812" y="1138" width="816" height="294" rx="10" fill="white" filter="url(#sh)"/>
+<rect x="812" y="1138" width="816" height="34" rx="10" fill="#0369a1"/>
+<rect x="812" y="1158" width="816" height="14" fill="#0369a1"/>
+<text x="1220" y="1160" text-anchor="middle" font-size="13" font-weight="700" fill="white">Memory Read Flow</text>
+<text x="1220" y="1174" text-anchor="middle" font-size="10" fill="#bae6fd">How memories reach the agent's system prompt (Call #1)</text>
+
+<!-- Read flow -->
+<rect x="828" y="1184" width="784" height="32" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
+<text x="1220" y="1204" text-anchor="middle" font-size="11" fill="#0c4a6e">User: "What should I have for dinner?"</text>
+
+<line x1="1220" y1="1216" x2="1220" y2="1230" stroke="#0369a1" stroke-width="2" marker-end="url(#ahc)"/>
+
+<rect x="828" y="1232" width="784" height="28" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
+<text x="1220" y="1250" text-anchor="middle" font-size="10" fill="#0c4a6e">infer_domains() → ["nutrition", "general"]  →  Qdrant filter: domain IN ["nutrition","general"]</text>
+
+<line x1="1220" y1="1260" x2="1220" y2="1274" stroke="#0369a1" stroke-width="2" marker-end="url(#ahc)"/>
+
+<rect x="828" y="1276" width="784" height="28" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
+<text x="1220" y="1294" text-anchor="middle" font-size="10" fill="#0c4a6e">Vector search (768-dim cosine) → top-10 candidates</text>
+
+<line x1="1220" y1="1304" x2="1220" y2="1318" stroke="#0369a1" stroke-width="2" marker-end="url(#ahc)"/>
+
+<rect x="828" y="1320" width="784" height="28" rx="6" fill="#fce7f3" stroke="#db2777" stroke-width="1"/>
+<text x="1220" y="1338" text-anchor="middle" font-size="10" fill="#831843">LLM Reranker (Feature 13 — llm_reranker) → scores by wellness relevance → top-5</text>
+
+<line x1="1220" y1="1348" x2="1220" y2="1362" stroke="#0369a1" stroke-width="2" marker-end="url(#ahc)"/>
+
+<rect x="828" y="1364" width="784" height="56" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+<text x="840" y="1381" font-size="11" font-weight="600" fill="#14532d">System Prompt — "### What You Know About This User"</text>
+<text x="840" y="1396" font-size="10" fill="#166534">  • User is vegetarian  • User is allergic to peanuts</text>
+<text x="840" y="1410" font-size="10" fill="#166534">  • User prefers spicy food  • User eats dinner around 8pm</text>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!--  E — SSE STREAMING FLOW                                          -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<text x="28" y="1455" font-size="10" font-weight="700" fill="#94a3b8" letter-spacing="2">E — SSE STREAMING FLOW</text>
+
+<rect x="12" y="1463" width="1616" height="182" rx="10" fill="white" filter="url(#sh)"/>
+<rect x="12" y="1463" width="1616" height="34" rx="10" fill="#0369a1"/>
+<rect x="12" y="1483" width="1616" height="14" fill="#0369a1"/>
+<text x="820" y="1485" text-anchor="middle" font-size="13" font-weight="700" fill="white">SSE Streaming — _stream_graph() · routes/chat.py:80</text>
+<text x="820" y="1499" text-anchor="middle" font-size="10" fill="#bae6fd">compiled_graph.astream_events(initial_state, config, version="v2") · filter: tag="final_response"</text>
+
+<!-- SSE steps horizontal -->
+<!-- Step 1 -->
+<rect x="28" y="1510" width="270" height="52" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+<text x="163" y="1530" text-anchor="middle" font-size="11" font-weight="600" fill="#0369a1">① Thinking</text>
+<text x="163" y="1548" text-anchor="middle" font-size="10" fill="#0369a1" font-family="'Cascadia Code','Fira Code',monospace">yield {"type":"thinking"}</text>
+
+<line x1="298" y1="1536" x2="330" y2="1536" stroke="#0369a1" stroke-width="2" marker-end="url(#ahc)"/>
+
+<!-- Step 2 -->
+<rect x="332" y="1510" width="310" height="52" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+<text x="487" y="1530" text-anchor="middle" font-size="11" font-weight="600" fill="#0369a1">② Token Streaming</text>
+<text x="487" y="1548" text-anchor="middle" font-size="10" fill="#0369a1" font-family="'Cascadia Code','Fira Code',monospace">yield {"type":"token","content":"..."}</text>
+
+<line x1="642" y1="1536" x2="674" y2="1536" stroke="#0369a1" stroke-width="2" marker-end="url(#ahc)"/>
+
+<!-- Step 3 -->
+<rect x="676" y="1510" width="450" height="52" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+<text x="901" y="1530" text-anchor="middle" font-size="11" font-weight="600" fill="#0369a1">③ Done Event</text>
+<text x="901" y="1548" text-anchor="middle" font-size="10" fill="#0369a1" font-family="'Cascadia Code','Fira Code',monospace">yield {"type":"done","response":"...","refresh_entities":[...]}</text>
+
+<line x1="1126" y1="1536" x2="1158" y2="1536" stroke="#0369a1" stroke-width="2" marker-end="url(#ahc)"/>
+
+<!-- Step 4 -->
+<rect x="1160" y="1510" width="450" height="52" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="1385" y="1530" text-anchor="middle" font-size="11" font-weight="600" fill="#166534">④ Persist to DB</text>
+<text x="1385" y="1548" text-anchor="middle" font-size="10" fill="#166534" font-family="'Cascadia Code','Fira Code',monospace">db.persist_message(user) + db.persist_message(assistant)</text>
+
+<!-- SSE note -->
+<text x="820" y="1594" text-anchor="middle" font-size="10" fill="#64748b">Token filter: event="on_chat_model_stream" AND "final_response" in tags — strips tool-call chunks, only real response tokens reach client</text>
+<text x="820" y="1612" text-anchor="middle" font-size="10" fill="#64748b">Fallback: if no tokens streamed (tool-only response) → chunk aggregated_response in 30-char segments</text>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!--  F — SYSTEM PROMPT 6 SECTIONS                                    -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<text x="28" y="1668" font-size="10" font-weight="700" fill="#94a3b8" letter-spacing="2">F — SYSTEM PROMPT STRUCTURE (6 SECTIONS)</text>
+
+<rect x="12" y="1676" width="1616" height="218" rx="10" fill="white" filter="url(#sh)"/>
+
+<!-- Table header -->
+<rect x="12" y="1676" width="1616" height="32" rx="10" fill="#1e293b"/>
+<rect x="12" y="1694" width="1616" height="14" fill="#1e293b"/>
+<text x="200" y="1697" text-anchor="middle" font-size="12" font-weight="700" fill="white">Section</text>
+<text x="600" y="1697" text-anchor="middle" font-size="12" font-weight="700" fill="white">Data Source</text>
+<text x="1100" y="1697" text-anchor="middle" font-size="12" font-weight="700" fill="white">Example Injected Value</text>
+
+<!-- Row 1 -->
+<rect x="12" y="1708" width="1616" height="32" fill="#f8fafc"/>
+<line x1="12" y1="1740" x2="1628" y2="1740" stroke="#e2e8f0" stroke-width="1"/>
+<text x="200" y="1728" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">① User Profile</text>
+<text x="600" y="1728" text-anchor="middle" font-size="11" fill="#475569">Supabase DB / Redis cache (300s TTL)</text>
+<text x="1100" y="1728" text-anchor="middle" font-size="11" fill="#64748b" font-family="'Cascadia Code','Fira Code',monospace">Weight: 75kg · Height: 175cm · Age: 32</text>
+
+<!-- Row 2 -->
+<rect x="12" y="1740" width="1616" height="32" fill="#fce7f3"/>
+<line x1="12" y1="1772" x2="1628" y2="1772" stroke="#e2e8f0" stroke-width="1"/>
+<text x="200" y="1760" text-anchor="middle" font-size="11" font-weight="600" fill="#9d174d">② Memories</text>
+<text x="600" y="1760" text-anchor="middle" font-size="11" fill="#475569">Mem0 SEARCH → Qdrant + LLM reranker</text>
+<text x="1100" y="1760" text-anchor="middle" font-size="11" fill="#64748b" font-family="'Cascadia Code','Fira Code',monospace">User is vegetarian · User allergic to peanuts</text>
+
+<!-- Row 3 -->
+<rect x="12" y="1772" width="1616" height="32" fill="#faf5ff"/>
+<line x1="12" y1="1804" x2="1628" y2="1804" stroke="#e2e8f0" stroke-width="1"/>
+<text x="200" y="1792" text-anchor="middle" font-size="11" font-weight="600" fill="#7e22ce">③ Graph Relations</text>
+<text x="600" y="1792" text-anchor="middle" font-size="11" fill="#475569">Mem0 SEARCH → Neo4j Aura traversal</text>
+<text x="1100" y="1792" text-anchor="middle" font-size="11" fill="#64748b" font-family="'Cascadia Code','Fira Code',monospace">Diabetes → managed_with → Metformin</text>
+
+<!-- Row 4 -->
+<rect x="12" y="1804" width="1616" height="32" fill="#fff7ed"/>
+<line x1="12" y1="1836" x2="1628" y2="1836" stroke="#e2e8f0" stroke-width="1"/>
+<text x="200" y="1824" text-anchor="middle" font-size="11" font-weight="600" fill="#9a3412">④ Safety Constraints</text>
+<text x="600" y="1824" text-anchor="middle" font-size="11" fill="#475569">Derived from profile conditions/medications</text>
+<text x="1100" y="1824" text-anchor="middle" font-size="11" fill="#64748b" font-family="'Cascadia Code','Fira Code',monospace">⚠ No high-GI foods (Type 2 Diabetes)</text>
+
+<!-- Row 5 -->
+<rect x="12" y="1836" width="1616" height="32" fill="#f0fdf4"/>
+<line x1="12" y1="1868" x2="1628" y2="1868" stroke="#e2e8f0" stroke-width="1"/>
+<text x="200" y="1856" text-anchor="middle" font-size="11" font-weight="600" fill="#14532d">⑤ Today's Meals</text>
+<text x="600" y="1856" text-anchor="middle" font-size="11" fill="#475569">Supabase DB query (date=today, limit=30)</text>
+<text x="1100" y="1856" text-anchor="middle" font-size="11" fill="#64748b" font-family="'Cascadia Code','Fira Code',monospace">[breakfast] Oatmeal 300kcal · id: abc-123</text>
+
+<!-- Row 6 -->
+<rect x="12" y="1868" width="1616" height="26" rx="0" fill="#f8fafc"/>
+<text x="200" y="1885" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">⑥ Response Format</text>
+<text x="600" y="1885" text-anchor="middle" font-size="11" fill="#475569">Static rules (prompts.py)</text>
+<text x="1100" y="1885" text-anchor="middle" font-size="11" fill="#64748b" font-family="'Cascadia Code','Fira Code',monospace">Always include macros when logging meals</text>
+
+<!-- bottom radius fix -->
+<rect x="12" y="1884" width="1616" height="10" rx="0" fill="#f8fafc"/>
+<rect x="12" y="1880" width="8" height="14" fill="#f8fafc"/>
+<rect x="1620" y="1880" width="8" height="14" fill="#f8fafc"/>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!--  G — FALLBACK CHAIN                                              -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<text x="28" y="1920" font-size="10" font-weight="700" fill="#94a3b8" letter-spacing="2">G — FALLBACK CHAIN &amp; STORAGE OVERVIEW</text>
+
+<rect x="12" y="1928" width="1616" height="180" rx="10" fill="white" filter="url(#sh)"/>
+
+<!-- Fallback horizontal diagram -->
+<!-- Memory Search fallback -->
+<text x="28" y="1954" font-size="11" font-weight="700" fill="#475569">Memory Search:</text>
+<rect x="180" y="1938" width="200" height="36" rx="6" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+<text x="280" y="1962" text-anchor="middle" font-size="11" font-weight="600" fill="#9d174d">Mem0 (Qdrant + Neo4j)</text>
+
+<line x1="380" y1="1956" x2="415" y2="1956" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+<text x="397" y="1948" text-anchor="middle" font-size="9" fill="#ef4444">fails</text>
+
+<rect x="417" y="1938" width="220" height="36" rx="6" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="527" y="1962" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Supabase full-text search</text>
+
+<!-- Auto-save fallback -->
+<text x="28" y="2004" font-size="11" font-weight="700" fill="#475569">Auto-save:</text>
+<rect x="180" y="1988" width="200" height="36" rx="6" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="280" y="2012" text-anchor="middle" font-size="11" font-weight="600" fill="#92400e">Mem0 proxy</text>
+
+<line x1="380" y1="2006" x2="415" y2="2006" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,2"/>
+<text x="397" y="1998" text-anchor="middle" font-size="9" fill="#ef4444">timeout/fail</text>
+
+<rect x="417" y="1988" width="180" height="36" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="507" y="2012" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">Skip silently</text>
+
+<!-- Infrastructure legend -->
+<line x1="780" y1="1938" x2="780" y2="2098" stroke="#e2e8f0" stroke-width="1"/>
+<text x="798" y="1954" font-size="11" font-weight="700" fill="#475569">Infrastructure:</text>
+
+<rect x="798" y="1960" width="140" height="26" rx="5" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
+<text x="868" y="1977" text-anchor="middle" font-size="10" fill="#0369a1">Qdrant Cloud (vector)</text>
+
+<rect x="948" y="1960" width="140" height="26" rx="5" fill="#faf5ff" stroke="#9333ea" stroke-width="1"/>
+<text x="1018" y="1977" text-anchor="middle" font-size="10" fill="#7e22ce">Neo4j Aura (graph)</text>
+
+<rect x="1098" y="1960" width="140" height="26" rx="5" fill="#eff6ff" stroke="#2563eb" stroke-width="1"/>
+<text x="1168" y="1977" text-anchor="middle" font-size="10" fill="#1e40af">Supabase (relational)</text>
+
+<rect x="1248" y="1960" width="140" height="26" rx="5" fill="#fff7ed" stroke="#ea580c" stroke-width="1"/>
+<text x="1318" y="1977" text-anchor="middle" font-size="10" fill="#9a3412">Upstash Redis (cache)</text>
+
+<rect x="798" y="1995" width="140" height="26" rx="5" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1"/>
+<text x="868" y="2012" text-anchor="middle" font-size="10" fill="#5b21b6">LangGraph (orchestration)</text>
+
+<rect x="948" y="1995" width="140" height="26" rx="5" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+<text x="1018" y="2012" text-anchor="middle" font-size="10" fill="#92400e">OpenAI gpt-5.4 (LLM)</text>
+
+<rect x="1098" y="1995" width="140" height="26" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+<text x="1168" y="2012" text-anchor="middle" font-size="10" fill="#14532d">nomic-embed (768-dim)</text>
+
+<rect x="1248" y="1995" width="140" height="26" rx="5" fill="#fce7f3" stroke="#db2777" stroke-width="1"/>
+<text x="1318" y="2012" text-anchor="middle" font-size="10" fill="#9d174d">Mem0 OSS (memory)</text>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!--  H — KEY ARCHITECTURAL INSIGHTS                                  -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<rect x="12" y="2130" width="1616" height="246" rx="10" fill="#0f172a"/>
+<text x="820" y="2158" text-anchor="middle" font-size="14" font-weight="700" fill="white">Key Architectural Insights</text>
+
+<text x="35" y="2185" font-size="11" fill="#94a3b8">①</text>
+<text x="52" y="2185" font-size="11" fill="#e2e8f0"><tspan font-weight="700" fill="white">Single LLM, All Tools:</tspan> One ReAct loop with 13 tools handles nutrition + fitness + medical — simpler than multi-agent routing</text>
+
+<text x="35" y="2207" font-size="11" fill="#94a3b8">②</text>
+<text x="52" y="2207" font-size="11" fill="#e2e8f0"><tspan font-weight="700" fill="white">Parallel Context Fetch:</tspan> Profile, history, memories, meals all fetched with asyncio.gather before agent starts — latency = max(slowest), not sum</text>
+
+<text x="35" y="2229" font-size="11" fill="#94a3b8">③</text>
+<text x="52" y="2229" font-size="11" fill="#e2e8f0"><tspan font-weight="700" fill="white">Metadata-Aware Retrieval:</tspan> Domain keywords inferred from message → Qdrant metadata filter reduces irrelevant memory noise (Feature 2)</text>
+
+<text x="35" y="2251" font-size="11" fill="#94a3b8">④</text>
+<text x="52" y="2251" font-size="11" fill="#e2e8f0"><tspan font-weight="700" fill="white">Wellness-Specific Memory:</tspan> Custom prompts (Feature 6 extraction, Feature 7 reconciliation) ensure only persistent health facts are stored in Mem0</text>
+
+<text x="35" y="2273" font-size="11" fill="#94a3b8">⑤</text>
+<text x="52" y="2273" font-size="11" fill="#e2e8f0"><tspan font-weight="700" fill="white">Dual Memory Path:</tspan> Mem0 (Qdrant vector + Neo4j graph) for rich semantic retrieval; Supabase fallback for reliability; proxy for zero-friction auto-save</text>
+
+<text x="35" y="2295" font-size="11" fill="#94a3b8">⑥</text>
+<text x="52" y="2295" font-size="11" fill="#e2e8f0"><tspan font-weight="700" fill="white">Non-Blocking Auto-Save:</tspan> 15s timeout ensures streaming response is never delayed by background memory operations (Call #3)</text>
+
+<text x="35" y="2317" font-size="11" fill="#94a3b8">⑦</text>
+<text x="52" y="2317" font-size="11" fill="#e2e8f0"><tspan font-weight="700" fill="white">Configurable OSS Stack:</tspan> LLM, embedder, vector store, reranker all swappable via .env (Features 10–13) — no code change needed to switch providers</text>
+
+<text x="35" y="2339" font-size="11" fill="#94a3b8">⑧</text>
+<text x="52" y="2339" font-size="11" fill="#e2e8f0"><tspan font-weight="700" fill="white">SSE Token Streaming:</tspan> LLM tagged "final_response" → gateway strips tool-call chunks → real-time text to client with refresh_entities for UI updates</text>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!--  DIVIDERS between table rows (fix the table look) -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- Column dividers for table -->
+<line x1="390" y1="1708" x2="390" y2="1894" stroke="#e2e8f0" stroke-width="1"/>
+<line x1="806" y1="1708" x2="806" y2="1894" stroke="#e2e8f0" stroke-width="1"/>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!--  COLUMN HEADERS FOR TABLE (re-render on top of rows)            -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<text x="200" y="1697" text-anchor="middle" font-size="12" font-weight="700" fill="white">Section</text>
+<text x="598" y="1697" text-anchor="middle" font-size="12" font-weight="700" fill="white">Data Source</text>
+<text x="1217" y="1697" text-anchor="middle" font-size="12" font-weight="700" fill="white">Example Value Injected into System Prompt</text>
+
+<!-- Footer -->
+<rect x="0" y="2390" width="1640" height="42" fill="#0f172a"/>
+<text x="820" y="2416" text-anchor="middle" font-size="11" fill="#475569">Reso Single-Agent Wellness Pipeline · src/agent/graph.py · src/infra/mem0_client.py · src/gateway/routes/chat.py</text>
+
+<!-- Section H label -->
+<text x="28" y="2120" font-size="10" font-weight="700" fill="#94a3b8" letter-spacing="2">H — KEY ARCHITECTURAL INSIGHTS</text>
+
+</svg>
